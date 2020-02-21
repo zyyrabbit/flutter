@@ -1,6 +1,6 @@
 import 'package:event_bus/event_bus.dart';
-import 'package:peanut/router.dart';
 import 'package:peanut/http/api.dart';
+import 'package:peanut/router.dart';
 
 enum ENV {
   PRODUCTION,
@@ -11,7 +11,7 @@ class Application {
   /// 通过Application设计环境变量
   static final ENV env = ENV.DEV;
   static EventBus event;
-  static Router router;
+  static PageRouter pageRouter;
   static API api;
 
   /// 所有获取配置的唯一入口

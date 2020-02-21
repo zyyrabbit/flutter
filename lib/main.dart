@@ -17,7 +17,7 @@ class _MyAppState extends State<MyApp> {
   _MyAppState() {
     /// 挂载全局上下文
     Application.event = EventBus();
-    Application.router = Router();
+    Application.pageRouter = PageRouter();
     Application.api = API();
   }
 
@@ -26,7 +26,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Peanut',
       theme: ThemeData(primaryColor: Colors.white),
-      home: ContainerPage()
+      home: ContainerPage(),
+      onGenerateRoute: Application.pageRouter.router.generator,
     );
   }
 

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 /// 详情页面
-class DetailPage extends StatefulWidget {
+class AccountPage extends StatefulWidget {
   
-  DetailPage({Key key}) : super(key: key);
+  AccountPage({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _DetailPageState();
+    return _AccountPageState();
   }
 }
 
-class _DetailPageState extends State<DetailPage> {
+class _AccountPageState extends State<AccountPage> {
   Color pickColor = Color(0xffffffff); // 默认主题色
 
   @override
@@ -23,11 +23,13 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('文章详情页'),
+        title: Center(
+          child: Text('我'),
+        )
       ),
       backgroundColor: pickColor,
       body: Center(
-        child: Text('文章详情页')
+        child: Text('你好，林小芳')
       )
     );
   }

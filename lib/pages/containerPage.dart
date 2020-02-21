@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peanut/pages/home/homePage.dart';
-import 'package:peanut/pages/detail/detailPage.dart';
+import 'package:peanut/pages/account/accountPage.dart';
 
 ///这个页面是作为整个APP的最外层的容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
@@ -37,7 +37,7 @@ class _ContainerPageState extends State<ContainerPage> {
     if (pages == null) {
       pages = [
         HomePage(),
-        DetailPage(),
+        AccountPage(),
       ];
     }
     if (itemList == null) {
@@ -70,12 +70,6 @@ class _ContainerPageState extends State<ContainerPage> {
     );
   }
 
-  /* @override
-  void didUpdateWidget(ContainerPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print('didUpdateWidget');
-  } */
-
   @override
   Widget build(BuildContext context) {
     print('build _ContainerPageState');
@@ -100,7 +94,7 @@ class _ContainerPageState extends State<ContainerPage> {
         //当前选中的索引
         currentIndex: _selectIndex,
         //选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)（仅当type: BottomNavigationBarType.fixed,时生效）
-        fixedColor: Color.fromARGB(255, 0, 188, 96),
+        fixedColor: Color.fromARGB(255, 0, 127, 255),
         type: BottomNavigationBarType.fixed,
       ),
     );

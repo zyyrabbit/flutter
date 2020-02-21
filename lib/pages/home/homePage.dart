@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:peanut/bean/subjectEntity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:peanut/application.dart';
 import 'package:peanut/router.dart';
 import 'package:peanut/components/searchInput.dart';
+import 'package:peanut/bean/ArticleEntity.dart';
+import 'package:peanut/components/listRefresh.dart' as listComp;
 
 class HomePageState extends State<HomePage> {
-  static final itemHeight = 150.0;
-  List<Subject> _itemList = <Subject>[];
+  static final itemHeight = 120.0;
 
   @override
   void initState() {
     super.initState();
-    getTop().then((data) {
-      setState(() {
-        _itemList = data;
-      });
-    });
   }
 
   @override
@@ -26,23 +21,25 @@ class HomePageState extends State<HomePage> {
         title: buildSearchInput(context),
       ),
       body: Center(
-        child: _buildItemList()
+        child: new Column(
+          children: <Widget>[
+            new Expanded(
+              child: listComp.ListRefresh(getIndexListData, buildCard)
+            )
+          ]
+        )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Application.router.pushNoParams(context, Router.sharePage),
+        onPressed: () => Application.pageRouter.pushNoParams(context, PageName.sharePage),
         tooltip: 'share',
         child: Icon(Icons.add),
       ),
     );
   }
 
-  Future getTop( {count} ) async {
-    return await Application.api.top();
-  }
-
-  void onWidgetTap(Subject widgetPoint, BuildContext context) {
-    print('router ::: $Router.detailPage');
-    Application.router.pushNoParams(context, Router.detailPage);
+  void onWidgetTap(BuildContext context) {
+    print('router ::: $PageName.detailPage');
+    Application.pageRouter.pushNoParams(context, PageName.accoutPage);
   }
 
   Widget buildSearchInput(BuildContext context) {
@@ -50,13 +47,15 @@ class HomePageState extends State<HomePage> {
       if (value != '') {
         print('value ::: $value');
         // List<WidgetPoint> list = await widgetControl.search(value);
-        List<Subject> list = await getTop();
-        return list.map((item) => new MaterialSearchResult<String>(
+        Map<String, dynamic> result = await getIndexListData();
+        List<ArticleEntity> list = result['list'];
+        return list
+            .map((item) => new MaterialSearchResult<String>(
                   value: item.title,
                   icon: null,
                   text: 'widget',
                   onTap: () {
-                    onWidgetTap(item, context);
+                    onWidgetTap(context);
                   },
                 ))
             .toList();
@@ -66,33 +65,70 @@ class HomePageState extends State<HomePage> {
     }, (value) {}, () {});
   }
 
-  Widget _buildItemList() {
-    if (_itemList.length == 0) {
-      //loading
-      return CircularProgressIndicator();
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: /*1*/ (context, i) {
-        if (i.isOdd) return Divider(); /*2*/
-        final index = i ~/ 2; /*3*/
-        return _buildRow(_itemList[index]);
-      });
+  Future<Map> getIndexListData([Map<String, dynamic> params]) async {
+    var pageIndex = (params is Map) ? params['pageIndex'] : 0;
+    var responseList = [];
+    var pageTotal = 0;
+
+    try {
+      var response = await Application.api.top(page: pageIndex);
+      responseList = response['d']['entrylist'];
+      pageTotal = response['d']['total'];
+      if (!(pageTotal is int) || pageTotal <= 0) {
+        pageTotal = 0;
+      }
+    } catch (e) {}
+    pageIndex += 1;
+    List<ArticleEntity> resultList = responseList.map<ArticleEntity>((item) => ArticleEntity.fromMap(item)).toList();
+    Map<String, dynamic> result = {
+      'list': resultList,
+      'total': pageTotal,
+      'pageIndex': pageIndex
+    };
+    return result;
   }
 
-  Widget _buildRow(Subject item) {
-    return GestureDetector(
-      child: Container(
-        child: Row(
-          children: <Widget>[
-            imageWidget(item.images.medium),
-            itemInfoWidget(item)
-          ],
+  Widget buildCard(index, item) {
+    var children = <Widget>[
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 0, bottom: 10),
+                child: Text(item.title,
+                style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold)
+              )),
+              Text(
+                item.content,
+                style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
+              ),
+          ])
         ),
-      ),
-      onTap: () {
-        Application.router.pushNoParams(context, Router.detailPage);
-      }
+    ];
+    if (item.screenshot == null || item.screenshot != '') {
+      children.add(imageWidget(item.screenshot)); 
+    }
+
+    return Card(
+      color: Colors.white,
+      elevation: 0.1,
+      margin: new EdgeInsets.symmetric(vertical: 6.0),
+      child: GestureDetector(
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+          child: Row(children: children, crossAxisAlignment: CrossAxisAlignment.start),
+        ),
+        onTap: () {
+          Application.pageRouter.push(
+            context, 
+            PageName.webViewPage, 
+            {
+              'title': Uri.encodeComponent(item.title),
+              'url': Uri.encodeComponent(item.originalUrl)
+            }
+          );
+        })
     );
   }
 
@@ -106,26 +142,6 @@ class HomePageState extends State<HomePage> {
       margin: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
       height: itemHeight,
       width: 100.0,
-    );
-  }
-
-  itemInfoWidget(Subject item) {
-    return Container(
-      height: itemHeight,
-      alignment: Alignment.topLeft,
-      child: Row(
-        children: <Widget>[
-          Text(
-            item.title,
-            style: TextStyle(fontSize: 18.0)
-          ),
-          Text('(${item.year})',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey
-          )),
-        ],
-      ),
     );
   }
 }

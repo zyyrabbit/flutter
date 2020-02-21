@@ -135,8 +135,9 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
   Future _getResultsDebounced() async {
     if (_results.length == 0) {
       setState(() {
-        _loading = true;
+        _loading = false; // _loading = true; todo
       });
+      return;
     }
 
     if (_resultsTimer != null && _resultsTimer.isActive) {

@@ -46,7 +46,6 @@ class _SharePageState extends State<SharePage> {
           onPressed: () {
             if (_formKey.currentState.validate()) {
               _formKey.currentState.save();
-              print(formData);
             }
           },
         )]
@@ -102,25 +101,23 @@ class _SharePageState extends State<SharePage> {
 
   labelsWidgets() {
     return new Container(
-        padding: const EdgeInsets.only(top: 20.0),
-        child:  Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-            child: Icon(Icons.toc),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text('选择分类', style: TextStyle(fontSize: 16.0)),
-              Wrap(
-                spacing: 8.0, // gap between adjacent chips
-                runSpacing: 4.0, // gap between lines
-                children: actorWidgets.toList()
-              )
-            ]
-          )
+        padding: const EdgeInsets.all(15.0),
+        child:  Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: const Icon(Icons.toc),
+              ),
+              Text('选择分类', style: const TextStyle(fontSize: 16.0)),
+              ]
+            ),
+            Wrap(
+              spacing: 6.0, // gap between adjacent chips
+              runSpacing: 0, // gap between lines
+              children: actorWidgets.toList()
+            )
         ]
       )
     );
