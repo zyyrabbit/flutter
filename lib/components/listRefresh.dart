@@ -1,12 +1,4 @@
-/// Created with Android Studio.
-/// User: 一晟
-/// Date: 2019/1/4
-/// Time: 上午1:16
-/// email: zhu.yan@alibaba-inc.com
-/// target: ListRefresh 的示例
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class ListRefresh extends StatefulWidget {
@@ -16,10 +8,10 @@ class ListRefresh extends StatefulWidget {
   const ListRefresh([this.requestApi, this.renderItem]) : super();
 
   @override
-  State<StatefulWidget> createState() => _ListRefreshState();
+  State<StatefulWidget> createState() => ListRefreshState();
 }
 
-class _ListRefreshState extends State<ListRefresh> {
+class ListRefreshState extends State<ListRefresh> {
   bool isLoading = false; // 是否正在请求数据中
   bool _hasMore = true; // 是否还有更多数据可加载
   int _pageIndex = 0; // 页面的索引
@@ -47,11 +39,12 @@ class _ListRefreshState extends State<ListRefresh> {
       if (mounted) {
         setState(() => isLoading = true);
       }
-      //if(_hasMore){ // 还有数据可以拉新
+      // 还有数据可以拉新
       List newEntries = await mokeHttpRequest();
-      //if (newEntries.isEmpty) {
       _hasMore = (_pageIndex <= _pageTotal);
-      if (this.mounted) {
+      print(newEntries);
+      print(_hasMore);
+      if (mounted) {
         setState(() {
           items.addAll(newEntries);
           isLoading = false;
@@ -96,10 +89,10 @@ class _ListRefreshState extends State<ListRefresh> {
   Widget _buildLoadText() {
     return Container(
         child: Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: Center(
-        child: Text("数据没有更多了！！！"),
-      ),
+        padding: const EdgeInsets.all(18.0),
+        child: Center(
+          child: Text("数据没有更多了！！！"),
+        ),
     ));
   }
 
@@ -114,13 +107,10 @@ class _ListRefreshState extends State<ListRefresh> {
             new Opacity(
               opacity: isLoading ? 1.0 : 0.0,
               child: new CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Colors.blue)),
+                valueColor: AlwaysStoppedAnimation(Colors.blue)),
             ),
             SizedBox(height: 20.0),
-            Text(
-              '稍等片刻更精彩...',
-              style: TextStyle(fontSize: 14.0),
-            )
+            Text( '稍等片刻更精彩...',style: TextStyle(fontSize: 14.0))
           ],
         )
        ),
