@@ -25,7 +25,7 @@ class _ContainerPageState extends State<ContainerPage> {
 
   final itemNames = [
     _Item('首页', 'assets/images/ic_tab_home_active.png', 'assets/images/ic_tab_home_normal.png'),
-    _Item('我的', 'assets/images/ic_tab_profile_active.png', 'assets/images/ic_tab_profile_normal.png')
+    _Item('个人中心', 'assets/images/ic_tab_profile_active.png', 'assets/images/ic_tab_profile_normal.png')
   ];
 
   List<BottomNavigationBarItem> itemList;

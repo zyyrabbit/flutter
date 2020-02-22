@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-/// 详情页面
+
 class AccountPage extends StatefulWidget {
-  
-  AccountPage({Key key}) : super(key: key);
+  final userInfo;
+  AccountPage({Key key, this.userInfo}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return _AccountPageState();
-  }
+  _AccountPageState createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
-  Color pickColor = Color(0xffffffff); // 默认主题色
+  final TextStyle textStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w300);
+   _AccountPageState() {}
 
   @override
   void initState() {
@@ -22,16 +22,42 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text('我'),
-        )
+      appBar:  AppBar(
+        title:  Center(child: Text('个人中心'))
       ),
-      backgroundColor: pickColor,
-      body: Center(
-        child: Text('你好，林小芳')
-      )
-    );
+      body: ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        // Divider(),
+        ListTile(
+          leading: Icon(Icons.search,size: 27.0,),
+          title: Text('全网搜', style: textStyle,),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: Icon(Icons.favorite,size: 27.0,),
+          title: Text('我的收藏',style: textStyle,),
+          onTap: () {},
+        ),
+        Divider(),
+        ListTile(
+          leading: Icon(Icons.email,size: 27.0,),
+          title: Text('反馈/建议',style: textStyle,),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: Icon(Icons.share,size: 27.0,),
+          title: Text('分享 App',style: textStyle,),
+          onTap: () {},
+        ),
+        Divider(),
+        ListTile(
+          leading: Icon(Icons.supervised_user_circle,size: 27.0,),
+          title: Text('点击登录',style: textStyle,),
+          onTap: () {},
+        ),
+      ],
+     )
+    ); 
   }
-
 }
