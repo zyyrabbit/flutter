@@ -15,9 +15,9 @@ class ListRefreshState extends State<ListRefresh> {
   bool isLoading = false; // 是否正在请求数据中
   bool _hasMore = true; // 是否还有更多数据可加载
   int _pageIndex = 0; // 页面的索引
-  int _pageTotal = 0; // 页面的索引
-  List items = new List();
-  ScrollController _scrollController = new ScrollController();
+  int _pageTotal = 0; // 页面总数
+  List items = List();
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -62,6 +62,7 @@ class ListRefreshState extends State<ListRefresh> {
       final listObj = await widget.requestApi({'pageIndex': _pageIndex});
       _pageIndex = listObj['pageIndex'];
       _pageTotal = listObj['total'];
+      print(_pageTotal);
       return listObj['list'];
     } else {
       return Future.delayed(Duration(seconds: 2), () {
@@ -91,7 +92,7 @@ class ListRefreshState extends State<ListRefresh> {
         child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Center(
-          child: Text("数据没有更多了！！！"),
+          child: Text('数据没有更多了！！！'),
         ),
     ));
   }
@@ -99,14 +100,14 @@ class ListRefreshState extends State<ListRefresh> {
 // 上提加载loading的widget,如果数据到达极限，显示没有更多
   Widget _buildProgressIndicator() {
     if (_hasMore) {
-      return new Padding(
+      return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: new Center(
+        child: Center(
             child: Column(
           children: <Widget>[
-            new Opacity(
+            Opacity(
               opacity: isLoading ? 1.0 : 0.0,
-              child: new CircularProgressIndicator(
+              child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation(Colors.blue)),
             ),
             SizedBox(height: 20.0),
@@ -128,7 +129,7 @@ class ListRefreshState extends State<ListRefresh> {
 
   @override
   Widget build(BuildContext context) {
-    return new RefreshIndicator(
+    return RefreshIndicator(
       child: ListView.builder(
         itemCount: items.length + 1,
         itemBuilder: (context, index) {

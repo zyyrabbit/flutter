@@ -23,7 +23,7 @@ class _SharePageState extends State<SharePage> {
     const ActorFilterEntry('Flutter', 3),
   ];
   List<String> _filters = <String>[];
-  Map<String, String> formData = {
+  Map<String, String> _formData = {
     'link': '',
     'title': '',
     'content': ''
@@ -44,6 +44,7 @@ class _SharePageState extends State<SharePage> {
           textColor: Colors.black,
           child: Text('发布'),
           onPressed: () {
+            _neverSatisfied();
             if (_formKey.currentState.validate()) {
               _formKey.currentState.save();
             }
@@ -56,44 +57,101 @@ class _SharePageState extends State<SharePage> {
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: createFilelds()
+            children: _createFields()
           ),
         ),
       )
     );
   }
 
-  createFilelds() {
+  Future<void> _neverSatisfied() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('通知'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('你的水平不够，继续修炼吧!奋斗，年青人'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('关闭'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+}
+
+  _createFields() {
     return <Widget>[
       TextFormField(
         decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.laptop),
+          prefixIcon: Icon(
+            Icons.laptop, 
+            color: Color.fromARGB(60, 60, 60, 60) /// 一定要设置，否者输入时候图标会消失
+          ),
           hintText: '文章链接',
           contentPadding: EdgeInsets.all(10.0),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1)
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color.fromARGB(60, 60, 60, 60), width: 1)
+          ),
         ),
         onSaved: (val) {
-          formData['link'] = val;
+          _formData['link'] = val;
         },
       ),
       TextFormField(
         decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.title),
+          prefixIcon: Icon(Icons.title, color: Color.fromARGB(60, 60, 60, 60) ),
           hintText: '标题',
           contentPadding: EdgeInsets.all(10.0),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1)
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color.fromARGB(60, 60, 60, 60), width: 1)
+          ),
         ),
         onSaved: (val) {
-          formData['title'] = val;
+          _formData['title'] = val;
         },
       ),
       TextFormField(
+        maxLines: 4,
         decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.tune),
+          prefixIcon: Icon(Icons.tune, color: Color.fromARGB(60, 60, 60, 60) ),
           hintText: '此刻你的想法...',
           contentPadding: EdgeInsets.all(10.0),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1)
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color.fromARGB(60, 60, 60, 60), width: 1)
+          ),
         ),
         onSaved: (val) {
-          formData['content'] = val;
+          _formData['content'] = val;
         },
+      ),
+      TextFormField(
+        enabled: false,
+        decoration: const InputDecoration(
+          prefixIcon: Icon(Icons.toc, color: Color.fromARGB(60, 60, 60, 60) ),
+          hintText: '选择分类',
+          border: InputBorder.none
+        )
       ),
       labelsWidgets()
     ];
@@ -101,18 +159,10 @@ class _SharePageState extends State<SharePage> {
 
   labelsWidgets() {
     return new Container(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.only(right: 15.0, left: 15.0),
         child:  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: const Icon(Icons.toc),
-              ),
-              Text('选择分类', style: const TextStyle(fontSize: 16.0)),
-              ]
-            ),
             Wrap(
               spacing: 6.0, // gap between adjacent chips
               runSpacing: 0, // gap between lines

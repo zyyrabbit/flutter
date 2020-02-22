@@ -4,6 +4,7 @@ import 'package:peanut/application.dart';
 import 'package:peanut/router.dart';
 import 'package:peanut/components/searchInput.dart';
 import 'package:peanut/bean/ArticleEntity.dart';
+import 'package:peanut/bean/searchResult.dart';
 import 'package:peanut/components/listRefresh.dart' as listComp;
 
 class HomePageState extends State<HomePage> {
@@ -37,25 +38,29 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  void onWidgetTap(BuildContext context) {
-    print('router ::: $PageName.detailPage');
-    Application.pageRouter.pushNoParams(context, PageName.accoutPage);
+  void onWidgetTap(BuildContext context, SearchResult item) {
+    print('router ::: $PageName.webViewPage');
+    Application.pageRouter.push(
+      context, 
+      PageName.webViewPage, 
+      { 
+        'title': Uri.encodeComponent(item.title),
+        'url': Uri.encodeComponent(item.url)
+      }
+    );
   }
 
   Widget buildSearchInput(BuildContext context) {
-    return new SearchInput((value) async {
+    return SearchInput((value) async {
       if (value != '') {
         print('value ::: $value');
-        // List<WidgetPoint> list = await widgetControl.search(value);
-        Map<String, dynamic> result = await getIndexListData();
-        List<ArticleEntity> list = result['list'];
-        return list
-            .map((item) => new MaterialSearchResult<String>(
+        List<SearchResult> list = await Application.api.suggestion(value);
+        return list.map((item) => MaterialSearchResult<String>(
                   value: item.title,
                   icon: null,
-                  text: 'widget',
+                  text: '',
                   onTap: () {
-                    onWidgetTap(context);
+                    onWidgetTap(context, item);
                   },
                 ))
             .toList();
