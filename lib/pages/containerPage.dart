@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:peanut/pages/home/homePage.dart';
 import 'package:peanut/pages/account/accountPage.dart';
+import 'package:peanut/bean/userInfor.dart';
+import 'package:provider/provider.dart';
+import 'package:peanut/bean/globalEntity.dart';
 
 ///这个页面是作为整个APP的最外层的容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
-  ContainerPage({Key key}) : super(key: key);
+  final UserInfor userInfor;
+  final bool hasLogin;
+  ContainerPage(this.userInfor, this.hasLogin, {Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,6 +39,7 @@ class _ContainerPageState extends State<ContainerPage> {
   void initState() {
     super.initState();
     print('initState _ContainerPageState');
+    
     if (pages == null) {
       pages = [
         HomePage(),
@@ -73,29 +79,32 @@ class _ContainerPageState extends State<ContainerPage> {
   @override
   Widget build(BuildContext context) {
     print('build _ContainerPageState');
-    return Scaffold(
-      body: new Stack(
-        children: [
-          _getPagesWidget(0),
-          _getPagesWidget(1),
-        ],
-      ),
-      backgroundColor: Color.fromARGB(255, 248, 248, 248),
-      bottomNavigationBar: BottomNavigationBar(
-        items: itemList,
-        onTap: (int index) {
-          ///这里根据点击的index来显示，非index的page均隐藏
-          setState(() {
-            _selectIndex = index;
-          });
-        },
-        //图标大小
-        iconSize: 24,
-        //当前选中的索引
-        currentIndex: _selectIndex,
-        //选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)（仅当type: BottomNavigationBarType.fixed,时生效）
-        fixedColor: Color.fromARGB(255, 0, 127, 255),
-        type: BottomNavigationBarType.fixed,
+    return Provider(
+      create: (context) => GlobalEntity(userInfor: widget.userInfor, hasLogin: widget.hasLogin),
+      child: Scaffold(
+        body: new Stack(
+          children: [
+            _getPagesWidget(0),
+            _getPagesWidget(1),
+          ],
+        ),
+        backgroundColor: Color.fromARGB(255, 248, 248, 248),
+        bottomNavigationBar: BottomNavigationBar(
+          items: itemList,
+          onTap: (int index) {
+            ///这里根据点击的index来显示，非index的page均隐藏
+            setState(() {
+              _selectIndex = index;
+            });
+          },
+          ///图标大小
+          iconSize: 24,
+          ///当前选中的索引
+          currentIndex: _selectIndex,
+          ///选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)（仅当type: BottomNavigationBarType.fixed,时生效）
+          fixedColor: Color.fromARGB(255, 0, 127, 255),
+          type: BottomNavigationBarType.fixed,
+        ),
       ),
     );
   }

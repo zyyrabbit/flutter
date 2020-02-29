@@ -7,8 +7,13 @@ import 'package:peanut/bean/ArticleEntity.dart';
 import 'package:peanut/bean/searchResult.dart';
 import 'package:peanut/components/listRefresh.dart' as listComp;
 
+class HomePage extends StatefulWidget {
+  HomePage({Key key}) : super(key: key);
+  @override
+  HomePageState createState() => HomePageState();
+}
+
 class HomePageState extends State<HomePage> {
-  static final itemHeight = 120.0;
 
   @override
   void initState() {
@@ -101,9 +106,11 @@ class HomePageState extends State<HomePage> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(left: 0, bottom: 10),
-                child: Text(item.title,
-                style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold)
-              )),
+                child: Text(
+                  item.title,
+                  style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold)
+                )
+              ),
               Text(
                 item.content,
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
@@ -111,8 +118,9 @@ class HomePageState extends State<HomePage> {
           ])
         ),
     ];
+
     if (item.screenshot == null || item.screenshot != '') {
-      children.add(imageWidget(item.screenshot)); 
+      children.add(_imageWidget(item.screenshot)); 
     }
 
     return Card(
@@ -125,34 +133,22 @@ class HomePageState extends State<HomePage> {
           child: Row(children: children, crossAxisAlignment: CrossAxisAlignment.start),
         ),
         onTap: () {
-          Application.pageRouter.push(
-            context, 
-            PageName.webViewPage, 
-            {
-              'title': Uri.encodeComponent(item.title),
-              'url': Uri.encodeComponent(item.originalUrl)
-            }
-          );
+          onWidgetTap(context, SearchResult(title: item.title, url: item.originalUrl)); 
         })
     );
   }
 
   //圆角图片
-  imageWidget(var imgUrl) {
+  Widget _imageWidget(var imgUrl) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.cover),
         borderRadius: BorderRadius.all(Radius.circular(5.0))
       ),
       margin: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
-      height: itemHeight,
+      height: 120.0,
       width: 100.0,
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-  @override
-  HomePageState createState() => HomePageState();
-}

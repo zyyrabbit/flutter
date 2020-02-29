@@ -6,13 +6,13 @@ typedef RequestCallBack = void Function(Map data);
 
 class HttpRequest {
 
-  final baseUrl;
+ // final baseUrl;
 
-  HttpRequest(this.baseUrl);
+ // HttpRequest(this.baseUrl);
 
   Future<dynamic> get(String uri, {Map<String, String> headers}) async {
     try {
-      http.Response response = await http.get(baseUrl + uri, headers: headers);
+      http.Response response = await http.get(uri, headers: headers);
       final statusCode = response.statusCode;
       final body = response.body;
       print('[uri=$uri][statusCode=$statusCode][response=$body]');
@@ -26,7 +26,7 @@ class HttpRequest {
 
   Future<dynamic> getResponseBody(String uri, {Map<String, String> headers}) async {
     try {
-      http.Response response = await http.get(baseUrl + uri, headers: headers);
+      http.Response response = await http.get(uri, headers: headers);
       final statusCode = response.statusCode;
       final body = response.body;
       print('[uri=$uri][statusCode=$statusCode][response=$body]');
@@ -39,7 +39,7 @@ class HttpRequest {
 
   Future<dynamic> post(String uri, dynamic body, {Map<String, String> headers}) async {
     try {
-      http.Response response = await http.post(baseUrl + uri, body: body, headers: headers);
+      http.Response response = await http.post(uri, body: body, headers: headers);
       final statusCode = response.statusCode;
       final responseBody = response.body;
       var result = Convert.jsonDecode(responseBody);
