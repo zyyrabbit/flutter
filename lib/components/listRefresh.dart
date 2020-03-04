@@ -24,7 +24,7 @@ class ListRefreshState extends State<ListRefresh> {
     super.initState();
     _getMoreData();
     _scrollController.addListener(() {
-      // 如果下拉的当前位置到scroll的最下面
+      /// 如果下拉的当前位置到scroll的最下面
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         _getMoreData();
@@ -42,8 +42,6 @@ class ListRefreshState extends State<ListRefresh> {
       // 还有数据可以拉新
       List newEntries = await mokeHttpRequest();
       _hasMore = (_pageIndex <= _pageTotal);
-      print(newEntries);
-      print(_hasMore);
       if (mounted) {
         setState(() {
           items.addAll(newEntries);
@@ -56,13 +54,12 @@ class ListRefreshState extends State<ListRefresh> {
     }
   }
 
-// 伪装吐出新数据
+/// 伪装吐出新数据
   Future<List> mokeHttpRequest() async {
     if (widget.requestApi is Function) {
       final listObj = await widget.requestApi({'pageIndex': _pageIndex});
       _pageIndex = listObj['pageIndex'];
       _pageTotal = listObj['total'];
-      print(_pageTotal);
       return listObj['list'];
     } else {
       return Future.delayed(Duration(seconds: 2), () {
@@ -71,11 +68,11 @@ class ListRefreshState extends State<ListRefresh> {
     }
   }
 
-// 下拉加载的事件，清空之前list内容，取前X个
-// 其实就是列表重置
+/// 下拉加载的事件，清空之前list内容，取前X个
+/// 其实就是列表重置
   Future<Null> _handleRefresh() async {
     List newEntries = await mokeHttpRequest();
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         items.clear();
         items.addAll(newEntries);
@@ -86,7 +83,7 @@ class ListRefreshState extends State<ListRefresh> {
     }
   }
 
-// 加载中的提示
+/// 加载中的提示
   Widget _buildLoadText() {
     return Container(
         child: Padding(
@@ -97,22 +94,21 @@ class ListRefreshState extends State<ListRefresh> {
     ));
   }
 
-// 上提加载loading的widget,如果数据到达极限，显示没有更多
+/// 上提加载loading的widget,如果数据到达极限，显示没有更多
   Widget _buildProgressIndicator() {
     if (_hasMore) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
-            child: Column(
-          children: <Widget>[
-            Opacity(
-              opacity: isLoading ? 1.0 : 0.0,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Colors.blue)),
-            ),
-            SizedBox(height: 20.0),
-            Text( '稍等片刻更精彩...',style: TextStyle(fontSize: 14.0))
-          ],
+          child: Column(
+            children: <Widget>[
+              Opacity(
+                opacity: isLoading ? 1.0 : 0.0,
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.blue)),
+              ),
+              SizedBox(height: 20.0),
+              Text( '稍等片刻更精彩...',style: TextStyle(fontSize: 14.0))
+            ],
         )
        ),
       );

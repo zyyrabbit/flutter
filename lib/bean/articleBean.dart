@@ -1,15 +1,17 @@
-class ArticleEntity {
+class ArticleBean {
   var summaryInfo;
   var screenshot;
   var content;
   var title;
   var originalUrl;
+  var id;
  
-  ArticleEntity.fromMap(Map<String, dynamic> map){
+  ArticleBean.fromMap(Map<String, dynamic> map){
     summaryInfo = map['summaryInfo'];
     screenshot = map['screenshot'];
     content = map['content'];
     title = map['title'];
     originalUrl = map['originalUrl'];
   }
+
 }

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:peanut/application.dart';
+import 'package:peanut/utils/application.dart';
 import 'package:peanut/router.dart';
-import 'package:peanut/bean/userEntity.dart';
-import 'package:peanut/bean/userInfor.dart';
+import 'package:peanut/bean/userInforBean.dart';
 import 'package:peanut/event/eventModel.dart';
 import 'package:peanut/pages/containerPage.dart';
 import 'package:peanut/utils/storage.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:provider/provider.dart';
+import 'package:peanut/model/globalModel.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -48,9 +49,10 @@ class _LoginPageState extends State<LoginPage> {
         Application.api.getUserInfo(event.token).then((result) async{
           await Storage.setValue('userInfor', result);
           await Storage.setValue('hasLogin', 'true');
-
+          GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+          globalModel.set(result, true);
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => ContainerPage(result, true)),
+            MaterialPageRoute(builder: (context) => ContainerPage()),
             (route) => route == null);
 
         }).catchError((onError) {
@@ -206,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
     });
     try {
       /// 请求数据
-      UserEntity params = UserEntity.fromMap({
+      UserInforBean params = UserInforBean.fromJson({
         'username': _username, 
         'password': _password,
       });
@@ -303,13 +305,15 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             onPressed: () async {
 
-                              UserInfor userInfor = UserInfor(
+                              UserInforBean userInfor = UserInforBean(
                                 username: '游客',
                                 id: -1,
                                 avatarPic: 'https://hbimg.huabanimg.com/9bfa0fad3b1284d652d370fa0a8155e1222c62c0bf9d-YjG0Vt_fw658'
                               );
+                              GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+                              globalModel.set(userInfor, false);
                               Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) => ContainerPage(userInfor, false)),
+                                MaterialPageRoute(builder: (context) => ContainerPage()),
                                 (route) => route == null);
                             },
                           )

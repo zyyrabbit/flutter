@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:peanut/router.dart';
+import 'package:peanut/utils/application.dart';
+import 'package:peanut/utils/jpush.dart';
+import 'package:peanut/bean/messageBean.dart';
 
 class ActorFilterEntry {
   const ActorFilterEntry(this.name, this.initials);
@@ -7,14 +11,14 @@ class ActorFilterEntry {
 }
 
 /// 分享文章
-class SharePage extends StatefulWidget {
-  SharePage({Key key}) : super(key: key);
+class PublishPage extends StatefulWidget {
+  PublishPage({Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _SharePageState();
+  State<StatefulWidget> createState() => _PublishPageState();
 }
 
-class _SharePageState extends State<SharePage> {
+class _PublishPageState extends State<PublishPage> {
   final _formKey = GlobalKey<FormState>();
   final List<ActorFilterEntry> _cast = <ActorFilterEntry>[
     const ActorFilterEntry('前端', 0),
@@ -24,7 +28,7 @@ class _SharePageState extends State<SharePage> {
   ];
   List<String> _filters = <String>[];
   Map<String, String> _formData = {
-    'link': '',
+    'originalUrl': '',
     'title': '',
     'content': ''
   };
@@ -43,10 +47,20 @@ class _SharePageState extends State<SharePage> {
         MaterialButton(
           textColor: Colors.black,
           child: Text('发布'),
-          onPressed: () {
-            _neverSatisfied();
+          onPressed: () async {
             if (_formKey.currentState.validate()) {
               _formKey.currentState.save();
+              await JpushUtil.sendMessage(MessageBean(
+                title: _formData['title'],
+                contentType: 'text',
+                msgContent: _formData['content'],
+                extras: {
+                  'title': _formData['title'],
+                  'content': _formData['content'],
+                  'originalUrl': _formData['originalUrl'],
+                }
+              ));
+              Application.pageRouter.pushNoParams(context, PageName.containerPage);
             }
           },
         )]
@@ -63,34 +77,7 @@ class _SharePageState extends State<SharePage> {
       )
     );
   }
-
-  Future<void> _neverSatisfied() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('通知'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('你的水平不够，继续修炼吧!奋斗，年青人'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('关闭'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-}
-
+  
   _createFields() {
     return <Widget>[
       TextFormField(
@@ -109,7 +96,13 @@ class _SharePageState extends State<SharePage> {
           ),
         ),
         onSaved: (val) {
-          _formData['link'] = val;
+          _formData['originalUrl'] = val;
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '文章链接不能为空!';
+          }
+          return null;
         },
       ),
       TextFormField(
@@ -126,6 +119,12 @@ class _SharePageState extends State<SharePage> {
         ),
         onSaved: (val) {
           _formData['title'] = val;
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '文章标题不能为空!';
+          }
+          return null;
         },
       ),
       TextFormField(
@@ -145,7 +144,7 @@ class _SharePageState extends State<SharePage> {
           _formData['content'] = val;
         },
       ),
-      TextFormField(
+      /* TextFormField(
         enabled: false,
         decoration: const InputDecoration(
           prefixIcon: Icon(Icons.toc, color: Color.fromARGB(60, 60, 60, 60) ),
@@ -153,7 +152,7 @@ class _SharePageState extends State<SharePage> {
           border: InputBorder.none
         )
       ),
-      labelsWidgets()
+      labelsWidgets() */
     ];
   }
 

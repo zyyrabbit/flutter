@@ -18,13 +18,13 @@ class Storage {
     }
   }
 
-  static Future<void> remove(key) async{
+  static Future<bool> remove(key) async{
     SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.remove(key);
+    return sp.remove(key);
   }
 
-  static Future<void> clear() async{
+  static Future<bool> clear() async{
     SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.clear();
+    return sp.clear();
   }
 }

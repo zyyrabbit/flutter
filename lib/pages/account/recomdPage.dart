@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:peanut/utils/application.dart';
 import 'package:peanut/router.dart';
-import 'package:peanut/components/searchInput.dart';
 import 'package:peanut/bean/articleBean.dart';
 import 'package:peanut/bean/searchResultBean.dart';
 import 'package:peanut/components/listRefresh.dart' as listComp;
+import 'package:peanut/db/sql.dart';
+import 'dart:math';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+class RecomPage extends StatefulWidget {
+  RecomPage({Key key}) : super(key: key);
   @override
-  HomePageState createState() => HomePageState();
+  RecomPageState createState() => RecomPageState();
 }
 
-class HomePageState extends State<HomePage> {
+class RecomPageState extends State<RecomPage> {
+  
 
   @override
   void initState() {
@@ -24,7 +26,9 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: buildSearchInput(context),
+        title: Center(
+          child: Text('推荐')
+        )
       ),
       body: Center(
         child: new Column(
@@ -34,11 +38,6 @@ class HomePageState extends State<HomePage> {
             )
           ]
         )
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Application.pageRouter.pushNoParams(context, PageName.publishPage),
-        tooltip: 'publish',
-        child: Icon(Icons.add),
       ),
     );
   }
@@ -55,39 +54,24 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildSearchInput(BuildContext context) {
-    return SearchInput((value) async {
-      if (value != '') {
-        print('value ::: $value');
-        List<SearchResultBean> list = await Application.api.suggestion(value);
-        return list.map((item) => MaterialSearchResult<String>(
-                  value: item.title,
-                  icon: null,
-                  text: '',
-                  onTap: () {
-                    onWidgetTap(context, item);
-                  },
-                ))
-            .toList();
-      } else {
-        return null;
-      }
-    }, (value) {}, () {});
-  }
-
   Future<Map> getIndexListData([Map<String, dynamic> params]) async {
-    var pageIndex = (params is Map) ? params['pageIndex'] : 0;
+    int pageIndex = (params is Map) ? params['pageIndex'] : 0;
+    int pageTotal = 0;
     var responseList = [];
-    var pageTotal = 0;
+
+    print('getIndexListData');
 
     try {
-      var response = await Application.api.top(page: pageIndex);
-      responseList = response['d']['entrylist'];
-      pageTotal = response['d']['total'];
+      responseList = await Sql.getByPage(TableName.RECOMD, 10, pageIndex * 10);
+      print('responseList: ${responseList.length}');
+      pageTotal = await Sql.getCount(TableName.RECOMD);
+      pageTotal = (pageTotal ~/ 10);
+      print('$pageIndex, $pageTotal');
       if (!(pageTotal is int) || pageTotal <= 0) {
         pageTotal = 0;
       }
     } catch (e) {}
+
     pageIndex += 1;
     List<ArticleBean> resultList = responseList.map<ArticleBean>((item) => ArticleBean.fromMap(item)).toList();
     Map<String, dynamic> result = {
@@ -120,7 +104,7 @@ class HomePageState extends State<HomePage> {
     ];
 
     if (item.screenshot == null || item.screenshot != '') {
-      children.add(_imageWidget(item.screenshot)); 
+     // children.add(_imageWidget(item.screenshot)); 
     }
 
     return Card(
@@ -137,18 +121,4 @@ class HomePageState extends State<HomePage> {
         })
     );
   }
-
-  //圆角图片
-  Widget _imageWidget(var imgUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.cover),
-        borderRadius: BorderRadius.all(Radius.circular(5.0))
-      ),
-      margin: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
-      height: 120.0,
-      width: 100.0,
-    );
-  }
 }
-

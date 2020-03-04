@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:event_bus/event_bus.dart';
-import 'package:peanut/application.dart';
+import 'package:peanut/utils/application.dart';
 import 'package:peanut/router.dart';
 import 'package:peanut/http/api.dart';
 import 'package:peanut/pages/containerPage.dart';
 import 'package:peanut/pages/loginPage.dart';
 import 'package:peanut/utils/storage.dart';
-import 'package:peanut/bean/userInfor.dart';
+import 'package:peanut/bean/userInforBean.dart';
+import 'package:peanut/db/dbProvider.dart';
+import 'package:provider/provider.dart';
+import 'package:peanut/model/globalModel.dart';
+import 'package:peanut/utils/jpush.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DbProvider().open();
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GlobalModel({}, false),
+      child: MyApp(),
+    )
+  );
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -16,9 +29,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _hasLogin = false;
-  bool _isLoading = true;
-  UserInfor userInfor;
+  bool hasLogin = false;
+  bool isLoading = true;
+  UserInforBean userInfor;
+  bool isConnected = false;
+  
 
   _MyAppState() {
     /// 挂载全局上下文
@@ -32,25 +47,28 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     Storage.getValue('hasLogin').then((value) async {
       if (value != null) {
-        _hasLogin = true;
+        hasLogin = true;
         userInfor = await Storage.getValue('userInfor');
       }
-      setState(() { _isLoading = false; });
+      setState(() { isLoading = false; });
     });
+    JpushUtil.initPlatformState();
   }
 
    /// 判断是否已经登录
   showPage() {
-    if (_isLoading) {
+    if (isLoading) {
       return Container(
-        color: Colors.white,
-        child: Center(
-          child: Text('启动中...', style: TextStyle(color: Colors.blueGrey),)
-        ),
+        child:  Image.asset(
+            'assets/images/peanut.jpg',
+            fit: BoxFit.fill,
+          ),
       );
     } else {
-      if (_hasLogin) {
-        return ContainerPage(userInfor, _hasLogin);
+      if (hasLogin) {
+        GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+        globalModel.set(userInfor, hasLogin);
+        return  ContainerPage();
       } else {
         return LoginPage();
       }

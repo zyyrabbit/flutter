@@ -1,32 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
 import 'package:peanut/pages/account/accountPage.dart';
-import 'package:peanut/pages/sharePage.dart';
+import 'package:peanut/pages/account/publishPage.dart';
+import 'package:peanut/pages/account/storePage.dart';
 import 'package:peanut/pages/webView.dart';
 import 'package:peanut/pages/home/homePage.dart';
 import 'package:peanut/pages/loginPage.dart';
+import 'package:peanut/pages/containerPage.dart';
+
 
 enum PageName {
   accoutPage,
-  sharePage,
   webViewPage,
   homePage,
   containerPage,
-  loginPage
+  loginPage,
+  publishPage,
+  storePage
 }
 
 final Map<PageName, Handler> pageRoutes = {
   PageName.accoutPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
     return AccountPage();
   }),
-  PageName.sharePage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-    return SharePage();
-  }),
   PageName.homePage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
     return HomePage();
   }),
   PageName.loginPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
     return LoginPage();
+  }),
+  PageName.containerPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+    return ContainerPage();
+  }),
+  PageName.publishPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+    return PublishPage();
+  }),
+  PageName.storePage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+    return StorePage();
   }),
   PageName.webViewPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
     String title = params['title']?.first;

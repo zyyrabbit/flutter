@@ -1,15 +1,17 @@
-class UserInfor {
+class UserInforBean {
   String username;
   int id;
   String avatarPic;
+  String password;
 
-  UserInfor({
+  UserInforBean({
     this.avatarPic,
     this.id,
     this.username,
+    this.password
   });
 
- UserInfor.fromJson(Map<String, dynamic> json) {
+ UserInforBean.fromJson(Map<String, dynamic> json) {
     if (json['login'] == null) {
       username = json['id'];
     }
@@ -22,6 +24,5 @@ class UserInfor {
     avatarPic = json['avatar_url'];
   }
 
-  Map<String, dynamic> toJson() =>
-      {'avatarPic': avatarPic, 'id': id, 'username': username};
+  Map<String, dynamic> toJson() => {'avatarPic': avatarPic, 'id': id, 'username': username, 'password': password};
 }

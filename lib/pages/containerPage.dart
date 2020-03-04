@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:peanut/pages/home/homePage.dart';
 import 'package:peanut/pages/account/accountPage.dart';
-import 'package:peanut/bean/userInfor.dart';
-import 'package:provider/provider.dart';
-import 'package:peanut/bean/globalEntity.dart';
+import 'package:peanut/pages/account/recomdPage.dart';
 
 ///这个页面是作为整个APP的最外层的容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
-  final UserInfor userInfor;
-  final bool hasLogin;
-  ContainerPage(this.userInfor, this.hasLogin, {Key key}) : super(key: key);
+
+  ContainerPage({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -30,7 +27,8 @@ class _ContainerPageState extends State<ContainerPage> {
 
   final itemNames = [
     _Item('首页', 'assets/images/ic_tab_home_active.png', 'assets/images/ic_tab_home_normal.png'),
-    _Item('个人中心', 'assets/images/ic_tab_profile_active.png', 'assets/images/ic_tab_profile_normal.png')
+    _Item('推荐', 'assets/images/ic_tab_subject_active.png', 'assets/images/ic_tab_subject_normal.png'),
+    _Item('个人中心', 'assets/images/ic_tab_profile_active.png', 'assets/images/ic_tab_profile_normal.png'),
   ];
 
   List<BottomNavigationBarItem> itemList;
@@ -38,11 +36,11 @@ class _ContainerPageState extends State<ContainerPage> {
   @override
   void initState() {
     super.initState();
-    print('initState _ContainerPageState');
-    
+   
     if (pages == null) {
       pages = [
         HomePage(),
+        RecomPage(),
         AccountPage(),
       ];
     }
@@ -78,14 +76,12 @@ class _ContainerPageState extends State<ContainerPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('build _ContainerPageState');
-    return Provider(
-      create: (context) => GlobalEntity(userInfor: widget.userInfor, hasLogin: widget.hasLogin),
-      child: Scaffold(
-        body: new Stack(
+    return  Scaffold(
+        body: Stack(
           children: [
             _getPagesWidget(0),
             _getPagesWidget(1),
+            _getPagesWidget(2),
           ],
         ),
         backgroundColor: Color.fromARGB(255, 248, 248, 248),
@@ -105,7 +101,6 @@ class _ContainerPageState extends State<ContainerPage> {
           fixedColor: Color.fromARGB(255, 0, 127, 255),
           type: BottomNavigationBarType.fixed,
         ),
-      ),
-    );
+      );
   }
 }
