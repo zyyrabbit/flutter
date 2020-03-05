@@ -94,12 +94,12 @@ class _AccountPageState extends State<AccountPage> {
         ),
         Divider(),
         ListTile(
-          leading: Icon(globalModel.hasLogin ? Icons.exit_to_app : Icons.supervised_user_circle, size: 27.0,),
-          title: Text(globalModel.hasLogin ? '退出登陆' : '点击登录',style: textStyle,),
+          leading: Icon(Icons.supervised_user_circle, size: 27.0,),
+          title: Text('退出登陆', style: textStyle,),
           onTap: () async{
-            if (globalModel.hasLogin) {
+            /* if (globalModel.hasLogin) {
               await Storage.clear();
-            }
+            } */
             Application.pageRouter.router.navigateTo(
               context, 
               '$PageName.loginPage',

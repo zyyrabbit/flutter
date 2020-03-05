@@ -207,13 +207,17 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
     try {
-      /// 请求数据
-      UserInforBean params = UserInforBean.fromJson({
-        'username': _username, 
-        'password': _password,
-      });
-
-     // await Storage.setString('userInfo', Convert.jsonEncode(value));
+      /// 暂时不做密码校验
+      UserInforBean userInfor = UserInforBean(
+        username: _username,
+        id: -1,
+        avatarPic: 'https://hbimg.huabanimg.com/9bfa0fad3b1284d652d370fa0a8155e1222c62c0bf9d-YjG0Vt_fw658'
+      );
+      GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+      globalModel.set(userInfor, false);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => ContainerPage()),
+        (route) => route == null);
     } catch(e) {
       print(e);
     }
@@ -298,7 +302,7 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             },
                           ),
-                          FlatButton(
+                          /* FlatButton(
                             child: Text(
                               '游客登录',
                               style: TextStyle(color: Color.fromARGB(255, 0, 127, 255), decoration: TextDecoration.underline),
@@ -316,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                                 MaterialPageRoute(builder: (context) => ContainerPage()),
                                 (route) => route == null);
                             },
-                          )
+                          ) */
                         ],
                       )
                     ],

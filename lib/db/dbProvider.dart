@@ -79,7 +79,8 @@ class DbProvider {
                )
               ''');
 
-      }, onOpen: (Database db) async {
+      }, 
+      onOpen: (Database db) async {
         print('new db opened');
       });
     } else {
