@@ -3,12 +3,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:peanut/utils/application.dart';
 import 'package:peanut/router.dart';
 import 'package:peanut/bean/userInforBean.dart';
-import 'package:peanut/event/eventModel.dart';
+import 'package:peanut/event/UserGithubOAuthEvent.dart';
 import 'package:peanut/pages/containerPage.dart';
 import 'package:peanut/utils/storage.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:provider/provider.dart';
 import 'package:peanut/model/globalModel.dart';
+import 'package:peanut/db/sql.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -47,10 +48,8 @@ class _LoginPageState extends State<LoginPage> {
       if (event.isSuccess == true) {
         ///  oAuth 认证成功
         Application.api.getUserInfo(event.token).then((result) async{
-          await Storage.setValue('userInfor', result);
           await Storage.setValue('hasLogin', 'true');
-          GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
-          globalModel.set(result, true);
+          await initGlobalModel(result, true);
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => ContainerPage()),
             (route) => route == null);
@@ -70,6 +69,20 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     });
+  }
+
+  Future<void> initGlobalModel(UserInforBean result, bool hasLogin) async {
+    GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+    List<Map<String, dynamic>> storeArticles = await getStoreWidgetList();
+    globalModel.set(result, true, storeArticles);
+  }
+
+  Future<List<Map<String, dynamic>>> getStoreWidgetList() async {
+    try {
+      return await Sql.getByCondition(TableName.STORE);
+    } on Exception catch(e) {
+      return [];
+    }
   }
 
 // 创建登录界面的TextForm
@@ -213,8 +226,7 @@ class _LoginPageState extends State<LoginPage> {
         id: -1,
         avatarPic: 'https://hbimg.huabanimg.com/9bfa0fad3b1284d652d370fa0a8155e1222c62c0bf9d-YjG0Vt_fw658'
       );
-      GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
-      globalModel.set(userInfor, false);
+      await initGlobalModel(userInfor, false);
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => ContainerPage()),
         (route) => route == null);
@@ -302,7 +314,7 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             },
                           ),
-                          /* FlatButton(
+                          FlatButton(
                             child: Text(
                               '游客登录',
                               style: TextStyle(color: Color.fromARGB(255, 0, 127, 255), decoration: TextDecoration.underline),
@@ -314,13 +326,12 @@ class _LoginPageState extends State<LoginPage> {
                                 id: -1,
                                 avatarPic: 'https://hbimg.huabanimg.com/9bfa0fad3b1284d652d370fa0a8155e1222c62c0bf9d-YjG0Vt_fw658'
                               );
-                              GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
-                              globalModel.set(userInfor, false);
+                              await initGlobalModel(userInfor, false);
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(builder: (context) => ContainerPage()),
                                 (route) => route == null);
                             },
-                          ) */
+                          )
                         ],
                       )
                     ],

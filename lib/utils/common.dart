@@ -15,4 +15,19 @@ class CommonUtil {
     print("Digest as bytes: ${digest.bytes}");
     print("Digest as hex string: $digest");
   }
+
+  ///验证URL
+  static bool isUrl(String value) {
+    return RegExp(r"^((https|http|ftp|rtsp|mms)?:\/\/)[^\s]+")
+      .hasMatch(value);
+  }
+
+  static String getCurrntDateTime() {
+    return DateTime.parse('${DateTime.now().toString()}-0800').toString();
+  }
+
+  static String getCurrntDate() {
+    String dateTime = getCurrntDateTime();
+    return dateTime.split(' ')[0];
+  }
 }

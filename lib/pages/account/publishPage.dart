@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:peanut/router.dart';
-import 'package:peanut/utils/application.dart';
 import 'package:peanut/utils/jpush.dart';
 import 'package:peanut/bean/messageBean.dart';
+import 'package:peanut/utils/common.dart';
+import 'package:peanut/router.dart';
+import 'package:peanut/db/sql.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:peanut/utils/application.dart';
+import 'package:peanut/event/MessageEvent.dart';
 
 class ActorFilterEntry {
   const ActorFilterEntry(this.name, this.initials);
@@ -36,6 +40,26 @@ class _PublishPageState extends State<PublishPage> {
   @override
   void initState() {
     super.initState();
+    registerListger();
+  }
+
+  void registerListger() {
+    Application.event.on<MessageEvent>().listen((event) async {
+      print('token:${event.userInfor}');
+      try {
+        await Sql.insert(TableName.RECOMD, event.userInfor);
+        Application.pageRouter.push(
+          context, 
+          PageName.containerPage,
+          {
+            'index': 1
+          },
+          clearStack: true
+        );
+      } catch(e) {
+        print(e);
+      }
+    });
   }
 
   @override
@@ -58,9 +82,9 @@ class _PublishPageState extends State<PublishPage> {
                   'title': _formData['title'],
                   'content': _formData['content'],
                   'originalUrl': _formData['originalUrl'],
+                  'time': CommonUtil.getCurrntDateTime()
                 }
               ));
-              Application.pageRouter.pushNoParams(context, PageName.containerPage);
             }
           },
         )]
@@ -77,6 +101,7 @@ class _PublishPageState extends State<PublishPage> {
       )
     );
   }
+
   
   _createFields() {
     return <Widget>[
@@ -102,7 +127,10 @@ class _PublishPageState extends State<PublishPage> {
           if (value == null || value.isEmpty) {
             return '文章链接不能为空!';
           }
-          return null;
+          if (!CommonUtil.isUrl(value)) {
+            return '文章链接格式不正确!';;
+          }
+          
         },
       ),
       TextFormField(

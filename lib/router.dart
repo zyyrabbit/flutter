@@ -30,7 +30,11 @@ final Map<PageName, Handler> pageRoutes = {
     return LoginPage();
   }),
   PageName.containerPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-    return ContainerPage();
+    int index = 0;
+    if (params['index'] != null) {
+      index = int.parse(params['index']?.first);
+    }
+    return ContainerPage(index: index);
   }),
   PageName.publishPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
     return PublishPage();
@@ -41,7 +45,8 @@ final Map<PageName, Handler> pageRoutes = {
   PageName.webViewPage: Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
     String title = params['title']?.first;
     String url = params['url']?.first;
-    return WebViewPage(url, title);
+    String btn = params['btn']?.first;
+    return WebViewPage(url, title, btn: btn);
   }),
 };
 
@@ -58,15 +63,17 @@ class PageRouter {
     });
   }
 
-  pushNoParams(BuildContext context, PageName pageName) {
-    router.navigateTo(context, '$pageName', transition: TransitionType.fadeIn);
+  pushNoParams(BuildContext context, PageName pageName, { bool clearStack  = false}) {
+    router.navigateTo(context, '$pageName', transition: TransitionType.fadeIn, clearStack : clearStack);
   }
 
-  push(BuildContext context, PageName pageName, dynamic params) {
+  
+
+  push(BuildContext context, PageName pageName, dynamic params, {bool clearStack = false}) {
     var path = pageName.toString() + '?';
     if (params is Map) {
       params.forEach( (key, val)  => path += '$key=$val&');
     }
-    router.navigateTo(context, path, transition: TransitionType.nativeModal);
+    router.navigateTo(context, path, transition: TransitionType.nativeModal, clearStack: clearStack);
   }
 }

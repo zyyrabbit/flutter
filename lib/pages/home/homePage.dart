@@ -50,7 +50,8 @@ class HomePageState extends State<HomePage> {
       PageName.webViewPage, 
       { 
         'title': Uri.encodeComponent(item.title),
-        'url': Uri.encodeComponent(item.url)
+        'url': Uri.encodeComponent(item.url),
+        'btn': '1'
       }
     );
   }

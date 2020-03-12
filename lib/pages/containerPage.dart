@@ -5,8 +5,8 @@ import 'package:peanut/pages/account/recomdPage.dart';
 
 ///这个页面是作为整个APP的最外层的容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
-
-  ContainerPage({Key key}) : super(key: key);
+  final int index;
+  ContainerPage({this.index, Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,6 +22,7 @@ class _Item {
 
 class _ContainerPageState extends State<ContainerPage> {
   List<Widget> pages;
+  int _selectIndex;
 
   final defaultItemColor = Color.fromARGB(255, 125, 125, 125);
 
@@ -59,9 +60,10 @@ class _ContainerPageState extends State<ContainerPage> {
           activeIcon: Image.asset(item.activeIcon, width: 30.0, height: 30.0))
         ).toList();
     }
-  }
 
-  int _selectIndex = 0;
+    _selectIndex = widget.index == null ? 0 : widget.index;
+
+  }
 
 //Stack（层叠布局）+ Offstage 组合, 解决状态被重置的问题
   Widget _getPagesWidget(int index) {

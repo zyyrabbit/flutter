@@ -2,20 +2,25 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:peanut/utils/application.dart';
-import 'package:peanut/event/eventModel.dart';
+import 'package:peanut/event/UserGithubOAuthEvent.dart';
 import 'package:peanut/db/sql.dart';
-import 'package:peanut/router.dart';
+import 'package:peanut/utils/common.dart';
+import 'package:provider/provider.dart';
+import 'package:peanut/model/globalModel.dart';
 
 class WebViewPage extends StatefulWidget {
   final String url;
   final String title;
+  final String btn;
 
-  WebViewPage(this.url, this.title);
+  WebViewPage(this.url, this.title, {this.btn});
   _WebViewPageState createState() => _WebViewPageState();
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   final flutterWebviewPlugin = FlutterWebviewPlugin();
+  bool isStore;
+  GlobalModel globalModel;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -52,8 +57,13 @@ class _WebViewPageState extends State<WebViewPage> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+    int index = globalModel.storeArticles.indexWhere((item) => item['originalUrl'] == widget.url);
+    isStore = index != -1;
+
     Widget appBarWidget = AppBar(
         elevation: 10,
         shape: UnderlineInputBorder(
@@ -61,22 +71,29 @@ class _WebViewPageState extends State<WebViewPage> {
             color: Color.fromARGB(255, 210, 210, 210)
           )
         ),
-        title: Text('文章详情页'),
-        actions: <Widget>[
+        title: Text(widget.title),
+        actions: widget.btn != null ? <Widget>[
           IconButton(
-            icon: Icon(Icons.favorite_border),
+            icon: Icon(
+              isStore ? Icons.star : Icons.star_border, 
+              color: isStore ? Color.fromARGB(255, 0, 127, 255) : Colors.black
+            ),
             tooltip: '收藏',
             onPressed: () async {
-              await Sql.insert(TableName.STORE, {
+              if (isStore) return;
+              Map<String, dynamic> item = {
                 'title': widget.title,
                 'originalUrl': widget.url,
-                'time': TimeOfDay.now().toString()
+                'time': CommonUtil.getCurrntDate()
+              };
+              await Sql.insert(TableName.STORE, item);
+              globalModel.storeArticles.add(item);
+              setState(() {
+                isStore = true;
               });
-              flutterWebviewPlugin.close();
-              Application.pageRouter.pushNoParams(context, PageName.containerPage);
             }
           ),
-        ]
+        ] : []
       );
     return Scaffold(
       key: _scaffoldKey,

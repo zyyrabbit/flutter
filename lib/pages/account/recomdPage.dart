@@ -6,7 +6,6 @@ import 'package:peanut/bean/articleBean.dart';
 import 'package:peanut/bean/searchResultBean.dart';
 import 'package:peanut/components/listRefresh.dart' as listComp;
 import 'package:peanut/db/sql.dart';
-import 'dart:math';
 
 class RecomPage extends StatefulWidget {
   RecomPage({Key key}) : super(key: key);

@@ -28,6 +28,14 @@ class Sql {
     return await db.delete(tableName);
   }
 
+  static Future<void> batchDelete(String tableName, List<int> ids) async {
+    Batch batch = db.batch();
+    for (int id in ids) {
+      batch.delete(tableName, where: 'id = ?', whereArgs: [id]);
+    }
+    return await batch.commit(noResult: true);
+  }
+
   static Future<List> getByPage(String tableName, int limit, int offset) async {
     return await query(tableName, limit: limit, offset: offset);
   }
@@ -61,6 +69,7 @@ class Sql {
   static Future<Map<String, dynamic>> insert(String tableName, Map<String, dynamic> json) async {
     int id = await db.insert(tableName, json);
     json['id'] = id;
+    
     return json;
   }
 

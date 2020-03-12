@@ -17,7 +17,7 @@ void main() async {
   await DbProvider().open();
   runApp(
     ChangeNotifierProvider(
-      create: (context) => GlobalModel({}, false),
+      create: (context) => GlobalModel({}, false, []),
       child: MyApp(),
     )
   );
@@ -48,7 +48,6 @@ class _MyAppState extends State<MyApp> {
     Storage.getValue('hasLogin').then((value) async {
       if (value != null) {
         hasLogin = true;
-        userInfor = await Storage.getValue('userInfor');
       }
       setState(() { isLoading = false; });
     });
@@ -59,15 +58,13 @@ class _MyAppState extends State<MyApp> {
   showPage() {
     if (isLoading) {
       return Container(
-        child:  Image.asset(
-            'assets/images/peanut.jpg',
-            fit: BoxFit.fill,
-          ),
+        child: Image.asset(
+          'assets/images/peanut.jpg',
+          fit: BoxFit.fill,
+        ),
       );
     } else {
       if (hasLogin) {
-        GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
-        globalModel.set(userInfor, hasLogin);
         return  ContainerPage();
       } else {
         return LoginPage();

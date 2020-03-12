@@ -66,7 +66,8 @@ class DbProvider {
                 title text not null,
                 originalUrl text not null,
                 screenshot text,
-                content text
+                content text,
+                time text
                )
               ''');
              // 可以优化，生产文件后，然后出错复制过去

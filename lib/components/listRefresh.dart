@@ -85,11 +85,22 @@ class ListRefreshState extends State<ListRefresh> {
 
 /// 加载中的提示
   Widget _buildLoadText() {
+    Widget child = Text('');
+    if (items.isEmpty) {
+      child = Column(
+        children: <Widget>[
+        Image.asset('assets/icon/icon.png', width: 60, height: 60, color: Color.fromARGB(255, 160, 160, 160)),
+        Text('暂无数据', style: TextStyle(color: Color.fromARGB(255, 160, 160, 160)))
+      ]);
+    } else if (_scrollController.position.pixels <
+          _scrollController.position.maxScrollExtent) {
+      child = Text('数据没有更多了！！！');
+    }
     return Container(
         child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Center(
-          child: Text('数据没有更多了！！！'),
+          child: child
         ),
     ));
   }

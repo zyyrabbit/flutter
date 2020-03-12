@@ -1,9 +1,11 @@
 
+
 import 'package:jpush_flutter/jpush_flutter.dart';
-import 'package:peanut/db/sql.dart';
 import 'package:peanut/utils/application.dart';
 import 'package:peanut/bean/messageBean.dart';
+import 'package:peanut/event/MessageEvent.dart';
 import 'dart:convert' as Convert;
+
 
 class JpushUtil {
   static const _appkey = '01c2efae9da06b0e9c5d43cc';
@@ -24,7 +26,9 @@ class JpushUtil {
         }, 
         onReceiveMessage: (Map<String, dynamic> message) async {
           print('flutter onReceiveMessage: $message');
-          handleMessage(message);
+          var extras = message['extras'];
+          var userInfor = Convert.jsonDecode(extras['cn.jpush.android.EXTRA']);
+          Application.event.fire(MessageEvent(userInfor));
         },
         onOpenNotification: (Map<String, dynamic> message) async {
           print('flutter onOpenNotification: $message');
@@ -52,17 +56,6 @@ class JpushUtil {
 
   static Future<void> sendMessage(MessageBean messageBean) async {
     await Application.api.sendMessageToJpush(messageBean, _authkey);
-  }
-
-  static handleMessage(Map<String, dynamic> message) async {
-    try {
-      var extras = message['extras'];
-      var userInfor = Convert.jsonDecode(extras['cn.jpush.android.EXTRA']);
-      print(userInfor);
-      await Sql.insert(TableName.RECOMD, userInfor); 
-    } catch(e) {
-      print(e);
-    }
   }
 }
 
