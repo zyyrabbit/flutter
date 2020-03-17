@@ -6,6 +6,7 @@ import 'package:peanut/components/searchInput.dart';
 import 'package:peanut/bean/articleBean.dart';
 import 'package:peanut/bean/searchResultBean.dart';
 import 'package:peanut/components/listRefresh.dart' as listComp;
+import 'package:peanut/components/upgrade.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -26,17 +27,21 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: buildSearchInput(context),
       ),
-      body: Center(
+      body: Upgrade(
         child: new Column(
           children: <Widget>[
             new Expanded(
               child: listComp.ListRefresh(getIndexListData, buildCard)
             )
           ]
-        )
+        ),
+        url: 'http://192.168.0.106:3000/apk/',
+        apkName: 'app-release.apk',
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Application.pageRouter.pushNoParams(context, PageName.publishPage),
+        onPressed: () {
+          Application.pageRouter.pushNoParams(context, PageName.publishPage);
+        },
         tooltip: 'publish',
         child: Icon(Icons.add),
       ),

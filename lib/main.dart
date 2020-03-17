@@ -33,7 +33,6 @@ class _MyAppState extends State<MyApp> {
   bool isLoading = true;
   UserInforBean userInfor;
   bool isConnected = false;
-  
 
   _MyAppState() {
     /// 挂载全局上下文
@@ -55,7 +54,7 @@ class _MyAppState extends State<MyApp> {
   }
 
    /// 判断是否已经登录
-  showPage() {
+  showHomePage() {
     if (isLoading) {
       return Container(
         child: Image.asset(
@@ -65,7 +64,7 @@ class _MyAppState extends State<MyApp> {
       );
     } else {
       if (hasLogin) {
-        return  ContainerPage();
+        return ContainerPage();
       } else {
         return LoginPage();
       }
@@ -77,7 +76,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Peanut',
       theme: ThemeData(primaryColor: Colors.white),
-      home: showPage(),
+      home: showHomePage(),
       onGenerateRoute: Application.pageRouter.router.generator,
     );
   }

@@ -320,7 +320,6 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(color: Color.fromARGB(255, 0, 127, 255), decoration: TextDecoration.underline),
                             ),
                             onPressed: () async {
-
                               UserInforBean userInfor = UserInforBean(
                                 username: '游客',
                                 id: -1,
