@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:open_file/open_file.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,7 +30,7 @@ class Upgrade extends StatefulWidget {
 }
 
 class _UpgradeState extends State<Upgrade> {
-
+  String taskId;
   @override
   void initState() {
     super.initState();
@@ -46,13 +45,19 @@ class _UpgradeState extends State<Upgrade> {
     );
   }
 
-Future<String> getVersionInfo() async {
-  String versionInfo = await http.read('${widget.url}app-version.json');
-  return versionInfo;
-}
+  @override
+  void dispose() {
+    _unbindBackgroundIsolate();
+    super.dispose();
+  }
+
+  Future<String> getVersionInfo() async {
+    String versionInfo = await http.read('${widget.url}app-version.json');
+    return versionInfo;
+  }
 
   /// 1.检查是否有更新
-Future<void> checkUpdate(BuildContext context) async{
+  Future<void> checkUpdate(BuildContext context) async{
   //Android , 需要下载apk包
   if(Platform.isAndroid){
     print('is android');
@@ -88,7 +93,7 @@ Future<void> checkUpdate(BuildContext context) async{
   }
 }
 
-/// 2.显示更新内容
+  /// 2.显示更新内容
   Future<void> showUpdate(BuildContext context, String version, String serverMsg, String url) async {
     return showDialog<void>(
       context: context,
@@ -139,15 +144,15 @@ Future<void> checkUpdate(BuildContext context) async{
     if(per != null && !per){
       return null;
     }
-    ProgressDialog pr = progressDialog();
+    // progressDialog();
     //开始下载apk
-    executeDownload(context , url, pr);
+    executeDownload(context , url);
   }
 
 
   /// 5.下载时显示下载进度dialog
-  ProgressDialog progressDialog() {
-     //下载时显示下载进度dialog
+  void progressDialog() {
+      //下载时显示下载进度dialog
     ProgressDialog pr = ProgressDialog(
       context,
       type: ProgressDialogType.Download, 
@@ -174,24 +179,6 @@ Future<void> checkUpdate(BuildContext context) async{
       pr.show();
     }
 
-    return pr;
-
-  }
-
-  /// 6.下载apk
-  Future<void> executeDownload(BuildContext context, String url, ProgressDialog pr) async {
-    //apk存放路径
-    final path = await _apkLocalPath;
-    File file = File(path + '/' + widget.apkName);
-    if (await file.exists()) await file.delete();
-
-    String taskId;
-    await FlutterDownloader.initialize();
-
-    FlutterDownloader.registerCallback(downloadCallback);
-
-    IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port');
-
     _port.listen((dynamic data) {
 
       String id = data[0];
@@ -210,19 +197,53 @@ Future<void> checkUpdate(BuildContext context) async{
 
       if (taskId == id && status == DownloadTaskStatus.complete) {
         if (pr.isShowing()) {
-         //s pr.hide();
+          pr.hide();
         }
-       // _installApk();
+        
       }
-   });
+    });
+
+  }
+
+  /// 6.下载apk
+  Future<void> executeDownload(BuildContext context, String url) async {
+    //apk存放路径
+    final path = await _apkLocalPath;
+    File file = File(path + '/' + widget.apkName);
+    if (await file.exists()) await file.delete();
+    // 只能调用一次
+    await FlutterDownloader.initialize();
+    FlutterDownloader.registerCallback(downloadCallback);
+    _bindBackgroundIsolate();
     //下载
     taskId = await FlutterDownloader.enqueue(
       url: url,//下载最新apk的网络地址
       savedDir: path,
-      showNotification: false,
-      openFileFromNotification: false
+      showNotification: true,
+      openFileFromNotification: true
     );
 
+  }
+
+  void _bindBackgroundIsolate() {
+    bool isSuccess = IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port');
+    if (!isSuccess) {
+      _unbindBackgroundIsolate();
+      _bindBackgroundIsolate();
+      return;
+    }
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+
+      if (taskId == id && status == DownloadTaskStatus.complete) {
+        _installApk();
+      }
+    });
+  }
+
+  void _unbindBackgroundIsolate() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
   }
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
@@ -233,9 +254,9 @@ Future<void> checkUpdate(BuildContext context) async{
   // 7.安装app
   Future<Null> _installApk() async {
     String path = await _apkLocalPath;
-    await OpenFile.open(path + '/' +  widget.apkName);
+    await FlutterDownloader.open(taskId: taskId);
   }
-  
+
   // 获取apk存放地址(外部路径)
   Future<String> get _apkLocalPath async {
     final directory = await getExternalStorageDirectory();

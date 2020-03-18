@@ -30,6 +30,9 @@
             </intent-filter>
         </activity>
         
+        <!--
+        import 'package:open_file/open_file.dart';
+        await OpenFile.open(path + '/' +  widget.apkName);
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
@@ -42,7 +45,8 @@
             android:resource="@xml/file_paths"
             tools:replace="android:resource"
             />
-        </provider>
+        </provider> 
+        -->
 
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
