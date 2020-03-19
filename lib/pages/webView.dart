@@ -41,16 +41,16 @@ class _WebViewPageState extends State<WebViewPage> {
           }
         }
 
-        if (Application.event != null) {
-          Application.event.fire(UserGithubOAuthEvent(token, true));
+        if (App.event != null) {
+          App.event.fire(UserGithubOAuthEvent(token, true));
         }
         print('ready close');
         flutterWebviewPlugin.close();
         // 验证成功
       } else if (url.indexOf('loginFail') == 0) {
         // 验证失败
-        if (Application.event != null) {
-          Application.event.fire(UserGithubOAuthEvent('', true));
+        if (App.event != null) {
+          App.event.fire(UserGithubOAuthEvent('', true));
         }
         flutterWebviewPlugin.close();
       }

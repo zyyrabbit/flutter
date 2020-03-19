@@ -1,15 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:peanut/utils/application.dart';
+
 import 'package:peanut/router.dart';
-import 'package:peanut/bean/userInforBean.dart';
-import 'package:peanut/event/UserGithubOAuthEvent.dart';
-import 'package:peanut/pages/containerPage.dart';
-import 'package:peanut/utils/storage.dart';
-import 'package:event_bus/event_bus.dart';
-import 'package:provider/provider.dart';
-import 'package:peanut/model/globalModel.dart';
 import 'package:peanut/db/sql.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:event_bus/event_bus.dart';
+import 'package:peanut/utils/storage.dart';
+import 'package:peanut/model/globalModel.dart';
+import 'package:peanut/utils/application.dart';
+import 'package:peanut/bean/userInforBean.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:peanut/pages/containerPage.dart';
+import 'package:peanut/event/UserGithubOAuthEvent.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -19,10 +20,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   _LoginPageState() {
-    Application.event = EventBus();
+    App.event = EventBus();
   }
 
-  /// 利用FocusNode和_focusScopeNode来控制焦点 可以通过FocusNode.of(context)来获取widget树中默认的_focusScopeNode
+  /// 利用FocusNode和_focusScopeNode来控制焦点 
+  /// 可以通过FocusNode.of(context) 来获取widget树中默认的_focusScopeNode
   FocusNode _emailFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
   FocusScopeNode _focusScopeNode = FocusScopeNode();
@@ -43,11 +45,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void registerListger() {
-    Application.event.on<UserGithubOAuthEvent>().listen((event) {
+    App.event.on<UserGithubOAuthEvent>().listen((event) {
       print('token:${event.token}');
       if (event.isSuccess == true) {
         ///  oAuth 认证成功
-        Application.api.getUserInfo(event.token).then((result) async{
+        App.api.getUserInfo(event.token).then((result) async{
           await Storage.setValue('hasLogin', 'true');
           await initGlobalModel(result, true);
           Navigator.of(context).pushAndRemoveUntil(
@@ -143,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.only(left: 25, right: 25, top: 20),
+                padding: const EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 20),
                 child: TextFormField(
                   controller: _passwordEditingController,
                   focusNode: _passwordFocusNode,
@@ -193,6 +195,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildSignInButton() {
     return GestureDetector(
       child: Container(
+        margin: EdgeInsets.only(top: 10),
         padding: EdgeInsets.only(left: 42, right: 42, top: 10, bottom: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -200,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Text(
           '登录',
-          style: TextStyle(fontSize: 25, color: Colors.white),
+          style: TextStyle(fontSize: 18, color: Colors.white),
         ),
       ),
       onTap: () {
@@ -304,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
                                   decoration: TextDecoration.underline),
                             ),
                             onPressed: () {
-                              Application.pageRouter.push(
+                              App.pageRouter.push(
                                 context,
                                 PageName.webViewPage,
                                 {

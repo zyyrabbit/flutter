@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
+import 'dart:isolate';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -8,8 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'dart:isolate';
-import 'dart:ui';
+import 'package:peanut/utils/application.dart';
 import 'package:http/http.dart' as http;
 
 ReceivePort _port = ReceivePort();
@@ -52,7 +53,12 @@ class _UpgradeState extends State<Upgrade> {
   }
 
   Future<String> getVersionInfo() async {
-    String versionInfo = await http.read('${widget.url}app-version.json');
+    String versionInfo = '';
+    try {
+      versionInfo = await http.read('${widget.url}app-version.json');
+    } catch(e) {
+      print(e);
+    }
     return versionInfo;
   }
 
@@ -84,7 +90,7 @@ class _UpgradeState extends State<Upgrade> {
   //android也可以采用此方法，会跳转到手机浏览器中下载
   if(Platform.isIOS){
     print('is ios');
-    final url = 'https://itunes.apple.com/cn/app/id1380512641'; // id 后面的数字换成自己的应用 id 就行了
+    final url = App.config['ios']['upgrade']; // id 后面的数字换成自己的应用 id 就行了
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: false);
     } else {

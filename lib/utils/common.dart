@@ -23,7 +23,8 @@ class CommonUtil {
   }
 
   static String getCurrntDateTime() {
-    return DateTime.parse('${DateTime.now().toString()}-0800').toString();
+    DateTime now = DateTime.parse('${DateTime.now().toString()}-0800');
+    return '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}';
   }
 
   static String getCurrntDate() {

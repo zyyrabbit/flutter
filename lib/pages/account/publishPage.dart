@@ -7,6 +7,9 @@ import 'package:peanut/db/sql.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:peanut/utils/application.dart';
 import 'package:peanut/event/MessageEvent.dart';
+import 'package:peanut/utils/formatTime.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:peanut/components/loadingDialog.dart';
 
 class ActorFilterEntry {
   const ActorFilterEntry(this.name, this.initials);
@@ -44,16 +47,13 @@ class _PublishPageState extends State<PublishPage> {
   }
 
   void registerListger() {
-    Application.event.on<MessageEvent>().listen((event) async {
-      print('token:${event.userInfor}');
+    App.event.on<MessageEvent>().listen((event) async {
+      print('token: ${event.userInfor}');
       try {
         await Sql.insert(TableName.RECOMD, event.userInfor);
-        Application.pageRouter.push(
-          context, 
+        App.pageRouter.pushNoParams(
+          context,
           PageName.containerPage,
-          {
-            'index': 1
-          },
           clearStack: true
         );
       } catch(e) {
@@ -74,17 +74,31 @@ class _PublishPageState extends State<PublishPage> {
           onPressed: () async {
             if (_formKey.currentState.validate()) {
               _formKey.currentState.save();
-              await JpushUtil.sendMessage(MessageBean(
-                title: _formData['title'],
-                contentType: 'text',
-                msgContent: _formData['content'],
-                extras: {
-                  'title': _formData['title'],
-                  'content': _formData['content'],
-                  'originalUrl': _formData['originalUrl'],
-                  'time': CommonUtil.getCurrntDateTime()
-                }
-              ));
+              showLoadingDialog(context);
+              try {
+                await JpushUtil.sendMessage(MessageBean(
+                  title: _formData['title'],
+                  contentType: 'text',
+                  msgContent: _formData['content'],
+                  extras: {
+                    'title': _formData['title'],
+                    'content': _formData['content'],
+                    'originalUrl': _formData['originalUrl'],
+                    'time': formatTime(DateTime.now().millisecondsSinceEpoch, format: 'yyyy-MM-dd hh:mm:ss')
+                  }
+                ));
+              } catch(e) {
+                Navigator.of(context).pop();
+                Fluttertoast.showToast(
+                  msg: '今天推荐超过限制',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIos: 1,
+                  backgroundColor: Color(0x99000000),
+                  textColor: Colors.white,
+                  fontSize: 16.0
+                );
+              }
             }
           },
         )]
@@ -102,7 +116,15 @@ class _PublishPageState extends State<PublishPage> {
     );
   }
 
-  
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return LoadingDialog();
+      });
+  }
+
   _createFields() {
     return <Widget>[
       TextFormField(
@@ -123,14 +145,13 @@ class _PublishPageState extends State<PublishPage> {
         onSaved: (val) {
           _formData['originalUrl'] = val;
         },
-        validator: (value) {
+        validator: (String value) {
           if (value == null || value.isEmpty) {
             return '文章链接不能为空!';
           }
           if (!CommonUtil.isUrl(value)) {
-            return '文章链接格式不正确!';;
+            return '文章链接格式不正确!';
           }
-          
         },
       ),
       TextFormField(

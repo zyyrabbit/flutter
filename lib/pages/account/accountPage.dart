@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:peanut/model/globalModel.dart';
-import 'package:peanut/utils/storage.dart';
 import 'package:peanut/utils/application.dart';
 import 'package:peanut/router.dart';
 import 'package:share/share.dart';
@@ -78,7 +77,7 @@ class _AccountPageState extends State<AccountPage> {
           leading: Icon(Icons.favorite, size: 27.0,),
           title: Text('我的收藏', style: textStyle,),
           onTap: () {
-            Application.pageRouter.pushNoParams(
+            App.pageRouter.pushNoParams(
               context, 
               PageName.storePage
             );
@@ -100,7 +99,7 @@ class _AccountPageState extends State<AccountPage> {
             /* if (globalModel.hasLogin) {
               await Storage.clear();
             } */
-            Application.pageRouter.router.navigateTo(
+            App.pageRouter.router.navigateTo(
               context, 
               '$PageName.loginPage',
               clearStack: true

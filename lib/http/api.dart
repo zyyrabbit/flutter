@@ -43,14 +43,14 @@ class API {
         'code=$requestToken',
         '',
         headers: {
-          'accept': 'application/json'
+          'accept': 'App/json'
         }
       );
       var accessToken = resultToken['access_token'];
       var resultInfo = await _request.get(
        'https://api.github.com/user',
         headers: {
-          'accept': 'application/json',
+          'accept': 'App/json',
           'Authorization': 'token $accessToken'
       });
      return UserInforBean.fromJson(resultInfo);
@@ -67,9 +67,13 @@ class API {
       'https://api.jpush.cn/v3/push',
       Convert.jsonEncode(messageBean),
       headers: {
-       'Content-Type': 'application/json',
+       'Content-Type': 'App/json',
        'Authorization': 'Basic $base64AppKey'
       }
     );
+
+    if (result['error']) {
+      throw Error();
+    }
   }
 }

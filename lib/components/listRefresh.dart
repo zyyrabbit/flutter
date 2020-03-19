@@ -109,7 +109,7 @@ class ListRefreshState extends State<ListRefresh> {
   Widget _buildProgressIndicator() {
     if (_hasMore) {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(50.0),
         child: Center(
           child: Column(
             children: <Widget>[

@@ -43,7 +43,7 @@ class RecomPageState extends State<RecomPage> {
 
   void onWidgetTap(BuildContext context, SearchResultBean item) {
     print('router ::: $PageName.webViewPage');
-    Application.pageRouter.push(
+    App.pageRouter.push(
       context, 
       PageName.webViewPage, 
       { 
@@ -87,15 +87,19 @@ class RecomPageState extends State<RecomPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 0, bottom: 10),
-                child: Text(
+              Text(
                   item.title,
                   style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold)
-                )
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 0, top: 10, bottom: 10),
+                child: Text(
+                item.content,
+                style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
+                ),
               ),
               Text(
-                item.content,
+                item.time,
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
               ),
           ])

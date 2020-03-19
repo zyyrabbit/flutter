@@ -28,7 +28,7 @@ class JpushUtil {
           print('flutter onReceiveMessage: $message');
           var extras = message['extras'];
           var userInfor = Convert.jsonDecode(extras['cn.jpush.android.EXTRA']);
-          Application.event.fire(MessageEvent(userInfor));
+          App.event.fire(MessageEvent(userInfor));
         },
         onOpenNotification: (Map<String, dynamic> message) async {
           print('flutter onOpenNotification: $message');
@@ -55,7 +55,7 @@ class JpushUtil {
   }
 
   static Future<void> sendMessage(MessageBean messageBean) async {
-    await Application.api.sendMessageToJpush(messageBean, _authkey);
+    await App.api.sendMessageToJpush(messageBean, _authkey);
   }
 }
 

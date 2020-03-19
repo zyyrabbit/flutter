@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:peanut/model/globalModel.dart';
 import 'package:peanut/utils/jpush.dart';
 import 'package:peanut/utils/excepHandler.dart';
+import 'package:peanut/utils/log.dart';
 
 Future<Null> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,9 +46,10 @@ class _MyAppState extends State<MyApp> {
 
   _MyAppState() {
     /// 挂载全局上下文
-    Application.event = EventBus();
-    Application.pageRouter = PageRouter();
-    Application.api = API();
+    App.event = EventBus();
+    App.pageRouter = PageRouter();
+    App.api = API();
+    App.log = Log();
   }
  
   @override
@@ -86,7 +88,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Peanut',
       theme: ThemeData(primaryColor: Colors.white),
       home: showHomePage(),
-      onGenerateRoute: Application.pageRouter.router.generator,
+      onGenerateRoute: App.pageRouter.router.generator,
     );
   }
 

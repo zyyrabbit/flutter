@@ -1,26 +1,43 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:peanut/http/api.dart';
 import 'package:peanut/router.dart';
+import 'package:peanut/utils/log.dart';
 
 enum ENV {
   PRODUCTION,
   DEV,
 }
 
-class Application {
-  /// 通过Application设计环境变量
+Map<String, String> android = {
+   'upgrade': 'http://test.ct-km.com/guangzhou/apk/'
+};
+
+
+Map<String, String> ios = {
+   'upgrade': 'https://itunes.apple.com/cn/app/id1380512641/'
+};
+
+class App {
+  /// 通过App设计环境变量
   static final ENV env = ENV.DEV;
   static EventBus event;
   static PageRouter pageRouter;
   static API api;
+  static Log log;
 
   /// 所有获取配置的唯一入口
-  Map<String, String> get config {
-    if (Application.env == ENV.PRODUCTION) {
-      return {};
+ static  Map<String, dynamic> get config {
+    if (App.env == ENV.PRODUCTION) {
+      return {
+        'android': android,
+        'ios': ios
+      };
     }
-    if (Application.env == ENV.DEV) {
-      return {};
+    if (App.env == ENV.DEV) {
+      return {
+        'android': android,
+        'ios': ios
+      };
     }
     return {};
   }

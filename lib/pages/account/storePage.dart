@@ -194,7 +194,7 @@ class StorePageState extends State<StorePage> {
 
   void _onWidgetTap(Map<String, dynamic> item) {
     print('router ::: $PageName.webViewPage');
-    Application.pageRouter.push(
+    App.pageRouter.push(
       context, 
       PageName.webViewPage,
       {

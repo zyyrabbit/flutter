@@ -35,12 +35,12 @@ class HomePageState extends State<HomePage> {
             )
           ]
         ),
-        url: 'http://192.168.0.106:3000/apk/',
+        url: App.config['android']['upgrade'],
         apkName: 'app-release.apk',
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Application.pageRouter.pushNoParams(context, PageName.publishPage);
+          App.pageRouter.pushNoParams(context, PageName.publishPage);
         },
         tooltip: 'publish',
         child: Icon(Icons.add),
@@ -50,7 +50,7 @@ class HomePageState extends State<HomePage> {
 
   void onWidgetTap(BuildContext context, SearchResultBean item) {
     print('router ::: $PageName.webViewPage');
-    Application.pageRouter.push(
+    App.pageRouter.push(
       context, 
       PageName.webViewPage, 
       { 
@@ -65,7 +65,7 @@ class HomePageState extends State<HomePage> {
     return SearchInput((value) async {
       if (value != '') {
         print('value ::: $value');
-        List<SearchResultBean> list = await Application.api.suggestion(value);
+        List<SearchResultBean> list = await App.api.suggestion(value);
         return list.map((item) => MaterialSearchResult<String>(
                   value: item.title,
                   icon: null,
@@ -87,7 +87,7 @@ class HomePageState extends State<HomePage> {
     var pageTotal = 0;
 
     try {
-      var response = await Application.api.top(page: pageIndex);
+      var response = await App.api.top(page: pageIndex);
       responseList = response['d']['entrylist'];
       pageTotal = response['d']['total'];
       if (!(pageTotal is int) || pageTotal <= 0) {

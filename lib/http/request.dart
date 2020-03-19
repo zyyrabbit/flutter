@@ -47,7 +47,7 @@ class HttpRequest {
       return result;
     } on Exception catch (e) {
       print('[uri=$uri]exception e=${e.toString()}');
-      return '';
+      return e;
     }
   }
 }
