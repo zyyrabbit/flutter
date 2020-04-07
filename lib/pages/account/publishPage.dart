@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:peanut/utils/jpush.dart';
 import 'package:peanut/bean/messageBean.dart';
 import 'package:peanut/utils/common.dart';
-import 'package:peanut/router.dart';
-import 'package:peanut/db/sql.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:peanut/utils/application.dart';
-import 'package:peanut/event/MessageEvent.dart';
 import 'package:peanut/utils/formatTime.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:peanut/components/loadingDialog.dart';
+import 'package:provider/provider.dart';
+import 'package:peanut/model/globalModel.dart';
 
 class ActorFilterEntry {
   const ActorFilterEntry(this.name, this.initials);
@@ -43,23 +41,6 @@ class _PublishPageState extends State<PublishPage> {
   @override
   void initState() {
     super.initState();
-    registerListger();
-  }
-
-  void registerListger() {
-    App.event.on<MessageEvent>().listen((event) async {
-      print('token: ${event.userInfor}');
-      try {
-        await Sql.insert(TableName.RECOMD, event.userInfor);
-        App.pageRouter.pushNoParams(
-          context,
-          PageName.containerPage,
-          clearStack: true
-        );
-      } catch(e) {
-        print(e);
-      }
-    });
   }
 
   @override
@@ -68,40 +49,43 @@ class _PublishPageState extends State<PublishPage> {
       appBar: AppBar(
         title: Text('文章详情页'),
         actions: <Widget>[
-        MaterialButton(
-          textColor: Colors.black,
-          child: Text('发布'),
-          onPressed: () async {
-            if (_formKey.currentState.validate()) {
-              _formKey.currentState.save();
-              showLoadingDialog(context);
-              try {
-                await JpushUtil.sendMessage(MessageBean(
-                  title: _formData['title'],
-                  contentType: 'text',
-                  msgContent: _formData['content'],
-                  extras: {
-                    'title': _formData['title'],
-                    'content': _formData['content'],
-                    'originalUrl': _formData['originalUrl'],
-                    'time': formatTime(DateTime.now().millisecondsSinceEpoch, format: 'yyyy-MM-dd hh:mm:ss')
-                  }
-                ));
-              } catch(e) {
-                Navigator.of(context).pop();
-                Fluttertoast.showToast(
-                  msg: '今天推荐超过限制',
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIos: 1,
-                  backgroundColor: Color(0x99000000),
-                  textColor: Colors.white,
-                  fontSize: 16.0
-                );
+            MaterialButton(
+            textColor: Colors.black,
+            child: Text('发布'),
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                _formKey.currentState.save();
+                showLoadingDialog(context);
+                GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+                try {
+                  await JpushUtil.sendMessage(MessageBean(
+                    title: _formData['title'],
+                    contentType: 'text',
+                    msgContent: _formData['content'],
+                    extras: {
+                      'title': _formData['title'],
+                      'author': globalModel.userInfor.username,
+                      'content': _formData['content'],
+                      'originalUrl': _formData['originalUrl'],
+                      'createdAt': formatTime(DateTime.now().millisecondsSinceEpoch, format: 'yyyy-MM-dd hh:mm:ss')
+                    }
+                  ));
+                } catch(e) {
+                 print(e);
+                  Navigator.of(context).pop();
+                  Fluttertoast.showToast(
+                    msg: '今天推荐超过限制',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIos: 1,
+                    backgroundColor: Color(0x99000000),
+                    textColor: Colors.white,
+                    fontSize: 16.0
+                  );
+                }
               }
-            }
-          },
-        )]
+            },
+          )]
       ),
       backgroundColor: Color(0xffffffff),
       body: Container(

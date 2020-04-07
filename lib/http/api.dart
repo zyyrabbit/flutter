@@ -71,8 +71,7 @@ class API {
        'Authorization': 'Basic $base64AppKey'
       }
     );
-
-    if (result['error']) {
+    if (result['error'] != null) {
       throw Error();
     }
   }

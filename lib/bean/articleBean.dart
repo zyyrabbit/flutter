@@ -5,7 +5,9 @@ class ArticleBean {
   var title;
   var originalUrl;
   var id;
-  var time;
+  var createdAt;
+  var user;
+  var author;
  
   ArticleBean.fromMap(Map<String, dynamic> map){
     summaryInfo = map['summaryInfo'];
@@ -13,7 +15,9 @@ class ArticleBean {
     content = map['content'];
     title = map['title'];
     originalUrl = map['originalUrl'];
-    time= map['time'];
+    createdAt= map['createdAt'];
+    user=map['user'];
+    author=map['author'];
   }
 
 }

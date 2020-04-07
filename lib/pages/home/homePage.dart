@@ -7,6 +7,9 @@ import 'package:peanut/bean/articleBean.dart';
 import 'package:peanut/bean/searchResultBean.dart';
 import 'package:peanut/components/listRefresh.dart' as listComp;
 import 'package:peanut/components/upgrade.dart';
+import 'package:peanut/utils/formatTime.dart';
+import 'package:peanut/event/MessageEvent.dart';
+import 'package:peanut/db/sql.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -19,6 +22,24 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    registerListger();
+  }
+
+  void registerListger() {
+    print('123');
+    App.event.on<MessageEvent>().listen((event) async {
+      print('token: ${event.userInfor}');
+      try {
+        await Sql.insert(TableName.RECOMD, event.userInfor);
+        App.pageRouter.pushNoParams(
+          context,
+          PageName.containerPage,
+          clearStack: true
+        );
+      } catch(e) {
+        print(e);
+      }
+    });
   }
 
   @override
@@ -121,12 +142,20 @@ class HomePageState extends State<HomePage> {
                 item.content,
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
               ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                formatTime(DateTime.parse(item.createdAt).millisecondsSinceEpoch),
+                style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
+              ),
+            )
           ])
         ),
     ];
 
-    if (item.screenshot == null || item.screenshot != '') {
-      children.add(_imageWidget(item.screenshot)); 
+    if (item.screenshot != '') {
+      double height = item.content == '' ? 60 : 120;
+      children.add(_imageWidget(item.screenshot,  height: height)); 
     }
 
     return Card(
@@ -145,14 +174,14 @@ class HomePageState extends State<HomePage> {
   }
 
   //圆角图片
-  Widget _imageWidget(var imgUrl) {
+  Widget _imageWidget(String imgUrl, { double height = 120 }) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.cover),
         borderRadius: BorderRadius.all(Radius.circular(5.0))
       ),
       margin: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
-      height: 120.0,
+      height: height,
       width: 100.0,
     );
   }

@@ -156,7 +156,7 @@ class StorePageState extends State<StorePage> {
                 Padding(
                   padding: EdgeInsets.only(top: 10),
                   child: Text(
-                  item['time'],
+                  item['createdAt'],
                   style: TextStyle(fontSize: 14, color: Color(0x255240240240))
                   ),
                 )

@@ -58,12 +58,13 @@ class RecomPageState extends State<RecomPage> {
     int pageTotal = 0;
     var responseList = [];
 
-    print('getIndexListData');
+    print(params);
 
     try {
       responseList = await Sql.getByPage(TableName.RECOMD, 10, pageIndex * 10);
       print('responseList: ${responseList.length}');
       pageTotal = await Sql.getCount(TableName.RECOMD);
+      print('pageTotal: $pageTotal');
       pageTotal = (pageTotal ~/ 10);
       print('$pageIndex, $pageTotal');
       if (!(pageTotal is int) || pageTotal <= 0) {
@@ -72,6 +73,7 @@ class RecomPageState extends State<RecomPage> {
     } catch (e) {}
 
     pageIndex += 1;
+   
     List<ArticleBean> resultList = responseList.map<ArticleBean>((item) => ArticleBean.fromMap(item)).toList();
     Map<String, dynamic> result = {
       'list': resultList,
@@ -98,17 +100,29 @@ class RecomPageState extends State<RecomPage> {
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
                 ),
               ),
-              Text(
-                item.time,
-                style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
-              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: Text(
+                      item.author,
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
+                    )
+                  ),
+                  Center(
+                   child:Text(
+                    item.createdAt,
+                    style: TextStyle(fontSize: 12, color: Color.fromRGBO(10,10, 10, 0.6))
+                  ),
+                  )
+                ],
+              )
+              
           ])
         ),
     ];
-
-    if (item.screenshot == null || item.screenshot != '') {
-     // children.add(_imageWidget(item.screenshot)); 
-    }
 
     return Card(
       color: Colors.white,

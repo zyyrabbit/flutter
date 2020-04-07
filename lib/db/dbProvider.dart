@@ -65,18 +65,20 @@ class DbProvider {
                 id integer primary key autoincrement, 
                 title text not null,
                 originalUrl text not null,
+                author text not null,
                 screenshot text,
                 content text,
-                time text
+                createdAt text
                )
               ''');
              // 可以优化，生产文件后，然后出错复制过去
             await db.execute('''
               create table ${Table.STORE} ( 
-                id integer primary key autoincrement, 
+                id integer primary key autoincrement,
+                author text,
                 title text not null,
                 originalUrl text not null,
-                time text
+                createdAt text
                )
               ''');
 

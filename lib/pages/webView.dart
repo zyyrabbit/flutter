@@ -84,7 +84,7 @@ class _WebViewPageState extends State<WebViewPage> {
               Map<String, dynamic> item = {
                 'title': widget.title,
                 'originalUrl': widget.url,
-                'time': CommonUtil.getCurrntDate()
+                'createdAt': CommonUtil.getCurrntDate()
               };
               await Sql.insert(TableName.STORE, item);
               globalModel.storeArticles.add(item);
